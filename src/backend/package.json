@@ -1,0 +1,19 @@
+{
+  "name": "hubstree-backend",
+  "version": "1.0.0",
+  "description": "Ontological cognitive pipeline backend for the Hubstree MVP by Hubstry",
+  "main": "src/backend/server.js",
+  "scripts": {
+    "start": "node src/backend/server.js",
+    "dev": "nodemon src/backend/server.js"
+  },
+  "author": "Guilherme Gonçalves Machado",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
