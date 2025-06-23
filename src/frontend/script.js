@@ -13,7 +13,8 @@ submitBtn.addEventListener('click', async () => {
   output.textContent = '⏳ Processando...';
 
   try {
-    const response = await fetch('http://localhost:3000/pipeline', {
+    const response = await fetch('https://hubstree-mvp-2.onrender.com/pipeline', {
+, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
