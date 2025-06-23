@@ -1,10 +1,16 @@
-document.getElementById('submitBtn').addEventListener('click', async () => {
-  const inputText = document.getElementById('inputText').value.trim();
+const submitBtn = document.getElementById('submitBtn');
+const inputText = document.getElementById('inputText');
+const output = document.getElementById('output');
 
-  if (!inputText) {
-    alert('Por favor, digite algum texto para processar.');
+submitBtn.addEventListener('click', async () => {
+  const text = inputText.value.trim();
+
+  if (!text) {
+    alert('⚠️ Por favor, digite algum texto para processar.');
     return;
   }
+
+  output.textContent = '⏳ Processando...';
 
   try {
     const response = await fetch('http://localhost:3000/pipeline', {
@@ -12,7 +18,7 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ input: inputText })
+      body: JSON.stringify({ input: text })
     });
 
     if (!response.ok) {
@@ -20,9 +26,8 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
     }
 
     const data = await response.json();
-
-    document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+    output.textContent = JSON.stringify(data, null, 2);
   } catch (error) {
-    alert(`Falha na requisição: ${error.message}`);
+    output.textContent = `❌ Erro ao processar: ${error.message}`;
   }
 });
