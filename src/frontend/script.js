@@ -14,7 +14,7 @@ submitBtn.addEventListener('click', async () => {
 
   try {
     const response = await fetch('https://hubstree-mvp-2.onrender.com/pipeline', {
-, {
+ 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
