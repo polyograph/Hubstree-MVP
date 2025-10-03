@@ -1,0 +1,15 @@
+{
+  "name": "hubstree-mvp",
+  "version": "1.0.0",
+  "description": "Framework Ontological Cognitive Pipeline by Hubstry",
+  "main": "src/backend/server.js",
+  "scripts": {
+    "start": "node src/backend/server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "body-parser": "^1.20.2"
+  },
+  "author": "Hubstry",
+  "license": "MIT"
+}
