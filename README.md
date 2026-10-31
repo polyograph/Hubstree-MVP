@@ -58,10 +58,22 @@ Onde comprimento = min(1; palavras/60) e diversidade = palavras únicas / palavr
 
 São duas normalizações diferentes, com papéis diferentes:
 
-1. **Keter (entrada):** Unicode NFC (forma de composição canônica), só para o hash SHA-256 e a exibição.
+1. **Keter (entrada):** Unicode NFC (forma de composição canônica), aplicada no navegador e repetida no servidor, que não confia na normalização do cliente. O limite de 20.000 caracteres é medido em pontos de código Unicode do texto NFC (`Array.from()` no JavaScript, `len()` no Python), não em unidades UTF-16. Texto com surrogate isolado ou com caractere de controle C0 (exceto tabulação, LF e CR) é recusado nos dois lados, com os códigos `TEXTO_UNICODE_INVALIDO` e `TEXTO_CONTROLE_INVALIDO`.
 2. **Engine (análise):** NFD (forma de decomposição canônica), remoção apenas do bloco U+0300–U+036F e conversão para minúsculas. Marcas combinantes fora desse bloco permanecem. É o mesmo recorte do `hexa-engine.ts` original.
 
 Espaço em branco, para dividir palavras e aparar sentenças, é exatamente o conjunto do `\s` do ECMAScript, escrito por extenso nos dois engines. Os limites de palavra das expressões regulares são ASCII nos dois lados.
+
+### Contrato de `POST /api/verificar`
+
+Corpo: `{"texto", "vetor"?, "input_sha256"?}`. O navegador envia o texto NFC integral, o vetor das seis relações e o SHA-256 desse texto. A resposta mantém as chaves anteriores e acrescenta `codigo` (identificador estável do motivo), `origem_resultado`, `politica_avaliada` e `proveniencia`:
+
+| Campo | Conteúdo |
+|---|---|
+| `proveniencia.input_sha256` | SHA-256 dos bytes UTF-8 do texto NFC integral, calculado no servidor |
+| `proveniencia.analise_sha256` | SHA-256 do trecho analisado (até 20.000 pontos de código) |
+| `proveniencia.hash_status` | `verificado`, `ausente_legado` (cliente sem hash) ou `divergente`, que bloqueia pela política |
+
+O hash detecta inconsistência entre o texto enviado e o recebido; não autentica o cliente. Erros de contrato devolvem HTTP 400 ou 413 com `codigo` (`HASH_MALFORMADO`, `CHAVE_NAO_PERMITIDA`, `CORPO_REQUISICAO_ACIMA_LIMITE` e outros). No navegador, 413, 400 e falhas de rede viram `BLOQUEADO` com `origem_resultado: "cliente"` e `politica_avaliada: false`: a política não chegou a avaliar a entrada.
 
 A paridade JS↔Python é testada em 446 amostras determinísticas (`tests/unicode_amostras.json`). Elas cobrem marcas combinantes dentro e fora do bloco removido, hangul, vietnamita, hebraico, árabe, devanágari, CJK, emoji com ZWJ, sigma final, I turco e espaços Unicode. A paridade é exigida para caracteres atribuídos nas duas bases Unicode. Caracteres muito recentes, que um dos ambientes ainda não conhece, podem ter ordem NFD diferente. Nesse caso o Yesod detecta a divergência e devolve `BLOQUEADO`, e há teste para isso.
 

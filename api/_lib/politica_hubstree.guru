@@ -4,30 +4,44 @@
 //
 // Ordem: comeca bloqueado; so sai do bloqueio quando todas as condicoes
 // de bloqueio forem falsas. As regras (limiares) moram aqui, nao no Python.
+// "codigo" e o identificador estavel do motivo; "motivo" e o texto legivel.
 
 String veredito = "BLOQUEADO";
 String motivo = "";
+String codigo = "";
 
 if (entrada_vazia) {
+    codigo = "ENTRADA_VAZIA";
     motivo = "entrada vazia";
 } elif (entrada_excede_limite) {
-    motivo = "entrada maior que o limite do pipeline";
+    codigo = "ENTRADA_ACIMA_LIMITE";
+    motivo = "entrada maior que o limite do pipeline (20.000 pontos de codigo apos NFC)";
 } elif (vetor_invalido) {
+    codigo = "VETOR_INVALIDO";
     motivo = "vetor hexarrelacional fora do intervalo [0,1]";
 } elif (vetor_cliente_invalido) {
+    codigo = "VETOR_CLIENTE_INVALIDO";
     motivo = "vetor enviado fora do contrato: seis numeros finitos em [0,1], sem texto nem booleano";
 } elif (divergencia_engine) {
+    codigo = "DIVERGENCIA_ENGINE";
     motivo = "o vetor enviado pelo navegador diverge do recalculado no servidor";
+} elif (hash_divergente) {
+    codigo = "HASH_DIVERGENTE";
+    motivo = "a entrada recebida difere da enviada pelo navegador";
 } elif (palavras < 20) {
     veredito = "AMOSTRA_INSUFICIENTE";
+    codigo = "AMOSTRA_INSUFICIENTE";
     motivo = "menos de 20 palavras: as heuristicas do engine sao pouco informativas";
 } elif (componentes_saturados > 0) {
     veredito = "LEITURA_LIMITADA";
+    codigo = "COMPONENTE_SATURADO";
     motivo = "ha componente saturado em 1: o perfil perde resolucao nesse eixo";
 } elif (sentencas < 2) {
     veredito = "LEITURA_LIMITADA";
+    codigo = "SENTENCA_UNICA";
     motivo = "uma unica sentenca: rho4 (simetria) depende da contagem de sentencas";
 } else {
     veredito = "PROCESSADO";
+    codigo = "PROCESSADO";
     motivo = "pipeline completo, vetor consistente entre navegador e servidor";
 }

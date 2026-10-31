@@ -48,13 +48,16 @@ function renderizar(r) {
   const y = r.yesod;
   const v = $('veredito');
   v.className = `veredito ${esc(y.veredito)}`;
-  v.innerHTML = `<span class="kicker">Veredito · Yesod (política GuruDev)</span><br><b>${esc(y.veredito)}</b><p>${esc(y.motivo)}</p>`;
+  const origem = y.origem_resultado === 'cliente'
+    ? 'bloqueio técnico no navegador; a política não avaliou'
+    : (y.politica_avaliada === false ? 'servidor; a política não chegou a decidir' : 'política GuruDev');
+  v.innerHTML = `<span class="kicker">Veredito · Yesod (${origem})</span><br><b>${esc(y.veredito)}</b><p>${esc(y.motivo)}${y.codigo ? ` <code>${esc(y.codigo)}</code>` : ''}</p>`;
   const m = r.tiferet.metricas;
   $('radar').innerHTML = radar(m);
   $('formula').textContent = `f(A) = ${num(m.goldenNorm)} · Π(A) = ${num(m.piSqrtScore)}`;
 
   const corpos = {
-    keter: `<p>${r.keter.caracteres.toLocaleString('pt-BR')} caracteres${r.keter.excedeLimite ? ' (acima do limite; recortado)' : ''}.</p><p class="nota">SHA-256: <code>${esc(r.keter.hash ?? 'indisponível neste navegador')}</code></p>`,
+    keter: `<p>${r.keter.caracteres.toLocaleString('pt-BR')} caracteres (pontos de código após NFC)${r.keter.excedeLimite ? ' — acima do limite; recortado' : ''}${r.keter.invalido ? ` — recusado: ${esc(r.keter.invalido)}` : ''}.</p><p class="nota">SHA-256 da entrada: <code>${esc(r.keter.inputSha256 ?? 'indisponível')}</code><br>SHA-256 do trecho analisado: <code>${esc(r.keter.hash ?? 'indisponível')}</code></p>`,
     chokhmah: `${r.chokhmah.termos.length ? `<ul class="chips">${r.chokhmah.termos.map((t) => `<li>${esc(t.termo)} · ${t.n}</li>`).join('')}</ul>` : '<p>Nenhum termo de conteúdo encontrado.</p>'}
       ${r.chokhmah.combinacoes.length ? `<p class="nota">Combinações recorrentes: ${r.chokhmah.combinacoes.map((c) => `${esc(c.par)} (${c.n})`).join(', ')}</p>` : ''}`,
     binah: `<table><tbody>
@@ -94,7 +97,7 @@ function carimbo() {
 
 desenharArvore();
 const texto = $('texto');
-const atualizarContador = () => { $('contador').textContent = `${texto.value.length.toLocaleString('pt-BR')} caracteres`; };
+const atualizarContador = () => { $('contador').textContent = `${Array.from(texto.value.normalize('NFC')).length.toLocaleString('pt-BR')} caracteres`; };
 texto.addEventListener('input', atualizarContador);
 $('exemplo').addEventListener('click', () => { texto.value = EXEMPLO; atualizarContador(); texto.focus(); });
 $('processar').addEventListener('click', async () => {
