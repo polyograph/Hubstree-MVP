@@ -46,3 +46,12 @@ Thumbs.db
 *.swp
 *~
 
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+# Tabelas geradas pelo PLY (parser da GuruDev)
+api/_lib/gurudev/parsetab.py
+api/_lib/gurudev/parser.out
+.vercel

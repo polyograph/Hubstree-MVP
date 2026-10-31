@@ -1,0 +1,31 @@
+// Politica do Yesod (Hubstree). Arquivo estatico, versionado no repositorio.
+// Nenhum texto do usuario entra aqui como codigo: o Python injeta apenas
+// indicadores do tipo bool ou int, ja recalculados no servidor.
+//
+// Ordem: comeca bloqueado; so sai do bloqueio quando todas as condicoes
+// de bloqueio forem falsas. As regras (limiares) moram aqui, nao no Python.
+
+String veredito = "BLOQUEADO";
+String motivo = "";
+
+if (entrada_vazia) {
+    motivo = "entrada vazia";
+} elif (entrada_excede_limite) {
+    motivo = "entrada maior que o limite do pipeline";
+} elif (vetor_invalido) {
+    motivo = "vetor hexarrelacional fora do intervalo [0,1]";
+} elif (divergencia_engine) {
+    motivo = "o vetor enviado pelo navegador diverge do recalculado no servidor";
+} elif (palavras < 20) {
+    veredito = "AMOSTRA_INSUFICIENTE";
+    motivo = "menos de 20 palavras: as heuristicas do engine sao pouco informativas";
+} elif (componentes_saturados > 0) {
+    veredito = "LEITURA_LIMITADA";
+    motivo = "ha componente saturado em 1: o perfil perde resolucao nesse eixo";
+} elif (sentencas < 2) {
+    veredito = "LEITURA_LIMITADA";
+    motivo = "uma unica sentenca: rho4 (simetria) depende da contagem de sentencas";
+} else {
+    veredito = "PROCESSADO";
+    motivo = "pipeline completo, vetor consistente entre navegador e servidor";
+}

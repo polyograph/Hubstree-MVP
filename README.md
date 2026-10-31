@@ -1,62 +1,75 @@
-# 🌳 Hubstree – Cognitive Ontological Pipeline
+# Hubstree · Pipeline Ontológico Cognitivo
 
-Hubstree é um framework cognitivo de computação semântica, IA explicável e pipelines inteligentes, desenvolvido pela startup Hubstry. A arquitetura é inspirada na Árvore da Vida da Cabala e nas Dez Categorias Ontológicas de Aristóteles, estruturando-se como um Grafo Semântico Multiescalar para processamento de dados, texto e conhecimento.
+Hubstree é um pipeline determinístico em dez etapas. Cada etapa corresponde a uma sefirá da Árvore da Vida, cruzada com uma das dez categorias de Aristóteles (mapa em [`docs/ontology-map.md`](docs/ontology-map.md)). Projeto da Hubstry Deep Tech, publicado pela Polyograph.
 
-## 🚀 Visão Geral
+A versão 2 substitui as respostas simuladas da v1 por operadores reais, unindo dois projetos do ecossistema:
 
-O Hubstree permite transformar inputs (texto, dados ou arquivos) em produtos digitais, análises cognitivas, design generativo e outputs inteligentes.
+- **HexaSign Lab** — o engine da Álgebra Hexarrelacional de Significância π√f(A) alimenta as etapas analíticas. Ele calcula seis componentes em [0,1] (similitude, homologia, equivalência, simetria, equilíbrio e compensação), a norma ponderada pela razão áurea f(A) e o operador Π(A) = f(A)^(1/π).
+- **GuruDev** — a etapa Yesod executa uma política escrita em GuruDev, no interpretador real da linguagem. O desenho vem do Evidence Gate da GuruDev: indicadores tipados, política estática, falha fechada.
 
-Funciona como um Pipeline Cognitivo, que processa dados seguindo as operações representadas pelos 10 Sefirot e as Categorias Ontológicas, operando tanto simbolicamente quanto computacionalmente.
+Nenhum modelo de linguagem participa do pipeline.
 
-## 🔗 Arquitetura
+## As dez etapas
 
-Input → Keter ↓ Binah ↔ Chokhmah ↓ Tiferet (Síntese Visual) ↙ ↘ Gevurah Chesed ↓ ↓ Netzach ↔ Hod ↓ Yesod (Fundação dos dados) ↓ Malkuth (Output final)
+| # | Sefirá | Categoria | O que faz |
+|---|---|---|---|
+| 1 | Keter | Substância | Normaliza a entrada (Unicode NFC), aplica o limite de 20.000 caracteres e calcula o SHA-256 |
+| 2 | Chokhmah | Ação | Termos-chave por frequência e combinações recorrentes |
+| 3 | Binah | Qualidade | Palavras, sentenças, diversidade lexical, conectores, termos estruturais e de contraste |
+| 4 | Tiferet | Relação | Vetor hexarrelacional, f(A), Π(A) e leitura do perfil com limiares declarados |
+| 5 | Gevurah | Quantidade | Restrições que limitam a leitura (amostra curta, saturação, sentenças longas) |
+| 6 | Chesed | Paixão / Capacidade | Os dois eixos mais baixos e a que sinais o engine é sensível neles |
+| 7 | Netzach | Lugar | Especificação reprodutível (versão, limiares, hash) e chamada à API |
+| 8 | Hod | Tempo | Relatório em Markdown |
+| 9 | Yesod | Posição relativa | Recalcula o vetor no servidor, compara com o do navegador e aplica a política GuruDev |
+| 10 | Malkuth | Estado | Entrega final em JSON |
 
-## 📦 Estrutura de Pastas
+### Vereditos da política (`api/_lib/politica_hubstree.guru`)
 
-hubstree/  
-├── README.md  
-├── LICENSE  
-├── package.json  
-├── .gitignore  
-│  
-├── /docs  
-│   ├── architecture.md  
-│   ├── ontology-map.md  
-│   ├── pitch.md  
-│   └── whitepaper.md  
-│  
-├── /src  
-│   ├── /backend  
-│   │   ├── server.js  
-│   │   ├── routes.js  
-│   │   └── /ontologies  
-│   │       ├── sefirot.js  
-│   │       ├── categories.js  
-│   │       └── operators.js  
-│   ├── /frontend  
-│   │   ├── index.html  
-│   │   ├── style.css  
-│   │   └── script.js  
-│   └── /utils  
-│       ├── parser.js  
-│       └── helpers.js  
-│  
-├── /data  
-│   └── ontology-sample.json  
-│  
-└── /design  
-    ├── logo.png  
-    ├── wireframe.png  
-    └── diagram-hubstree.png  
+| Veredito | Quando |
+|---|---|
+| `BLOQUEADO` | entrada vazia ou acima do limite, vetor fora de [0,1], divergência entre navegador e servidor, verificação indisponível ou qualquer erro da política |
+| `AMOSTRA_INSUFICIENTE` | menos de 20 palavras |
+| `LEITURA_LIMITADA` | algum componente saturado em 1, ou uma única sentença |
+| `PROCESSADO` | nenhuma das condições acima |
 
-## Instalação e Execução
+Os limiares moram na política GuruDev, não no Python. O texto do usuário nunca é executado: só o arquivo `.guru` passa pelo parser.
 
-1. Clone o repo: `git clone https://github.com/polyograph/Hubstree-MVP.git`
-2. Instale dependências: `npm install`
-3. Rode o server: `node src/backend/server.js`
-4. Acesse: http://localhost:3000
+## Limite do método
 
-## Sobre
+As heurísticas do engine são determinísticas e experimentais. Os resultados são saídas analíticas, não medições científicas validadas. A leitura do perfil evita afirmações de magnitude absoluta e de qualidade do texto, seguindo a especificação MS-01 do HexaSign Lab.
 
-Framework Ontological Cognitive Pipeline by Hubstry. MVP implementado como simulação dissertativa.
+## Estrutura
+
+```
+public/               frontend estático (HTML, CSS e módulos ES, sem build)
+  js/hexa-engine.js   porte fiel do hexa-engine.ts do HexaSign Lab
+  js/pipeline.js      as dez etapas
+  js/app.js           interface
+api/verificar.py      função serverless da Vercel (POST /api/verificar)
+api/_lib/
+  hexa_engine.py      o mesmo engine em Python, para o recálculo independente
+  yesod.py            indicadores, validação e execução da política
+  politica_hubstree.guru
+  gurudev/            interpretador GuruDev vendorizado (ver VENDOR.md)
+tests/                paridade JS↔Python, vereditos e falha fechada
+scripts/dev.py        servidor local
+```
+
+## Rodar localmente
+
+```bash
+pip install -r requirements.txt pytest
+python3 scripts/dev.py          # http://127.0.0.1:8000
+npm test                        # testes JS (node --test) e Python (pytest)
+```
+
+## Deploy
+
+Vercel, sem etapa de build: `public/` é servido como estático e `api/verificar.py` roda como função Python. A configuração está em `vercel.json`. O backend antigo no Render (`hubstree-mvp-2.onrender.com`) deixa de ser usado e pode ser desligado.
+
+## Licenças
+
+O código do Hubstree segue a licença Apache 2.0 (`LICENSE`). O interpretador GuruDev em `api/_lib/gurudev/` segue a Business Source License 1.1 do seu autor (`api/_lib/gurudev/LICENSE`).
+
+Generated by Claude

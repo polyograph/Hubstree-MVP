@@ -1,0 +1,2 @@
+# Dependência do interpretador GuruDev (vendorizado em api/_lib/gurudev)
+ply==3.11

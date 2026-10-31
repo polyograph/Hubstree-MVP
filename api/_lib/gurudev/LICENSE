@@ -1,0 +1,115 @@
+Business Source License 1.1
+
+Parameters
+
+Licensor:              Guilherme Goncalves Machado (Hubstry-DeepTech)
+
+Licensed Work:       GuruDev Core (gurudev-core)
+                     The GuruDev programming language, including its lexer,
+                      parser, interpreter, ontological engine, GuruMatrix
+                      architecture, grammar, syntax, and all associated
+                      documentation, examples, and tooling.
+
+Additional Use Grant: You may use the Licensed Work for academic research,
+                      education, personal projects, and non-commercial
+                      evaluation purposes without a separate commercial
+                      license.
+
+Change Date:           2029-05-07
+
+Change License:       GNU General Public License v3.0 (GPL-3.0)
+
+Notice
+
+The Business Source License (this document, or the "License") is not an Open
+Source license. However, the Licensed Work will eventually be made available
+under an Open Source License, as stated below.
+
+Licensor Copyright Notice:
+
+    Copyright (c) 2024-2026 Guilherme Goncalves Machado
+    All rights reserved.
+
+License Terms
+
+1. Grant of License
+
+   Subject to the terms and conditions of this License, Licensor hereby grants
+   to you a non-exclusive, worldwide, non-sublicensable, non-transferable,
+   limited license to use, reproduce, modify, and prepare Derivative Works of
+   the Licensed Work, solely for non-commercial purposes. Commercial use of
+   the Licensed Work, including but not limited to selling, licensing, renting,
+   leasing, or offering the Licensed Work as a service (SaAS), is expressly
+   prohibited without a separate written agreement with Licensor.
+
+   For the avoidance of doubt, "non-commercial purposes" includes:
+   - Academic research and publication
+   - Educational use and teaching
+   - Personal projects and experimentation
+   - Open-source contribution (non-commercial)
+   - Evaluation and testing
+
+   "Commercial purposes" includes, but is not limited to:
+   - Selling or licensing the Licensed Work or Derivative Works
+   - Using the Licensed Work in a commercial product or service
+   - Offering the Licensed Work as a managed service
+   - Integrating the Licensed Work into commercial software
+
+2. Restrictions
+
+   a. You may not sell, lease, or rent the Licensed Work.
+   b. You may not offer the Licensed Work as a managed service.
+   c. You may not use the Licensed Work for competitive purposes.
+   d. You may not remove or alter any proprietary notices.
+   e. You must retain all copyright, patent, trademark, and attribution
+      notices present in the Licensed Work.
+   f. You must include a copy of this License with any distribution.
+
+3. Ownership
+
+   The Licensed Work and all intellectual property rights therein are and shall
+   remain the exclusive property of Licensor. This License does not grant you
+   any ownership rights in the Licensed Work.
+
+4. Patent Grant
+
+   Subject to the terms and conditions of this License, Licensor hereby grants
+   to you a non-exclusive, worldwide, non-sublicensable, non-transferable,
+   limited license under any patent claims licensable by Licensor that are
+   necessarily infringed by the use or sale of the Licensed Work, solely for
+   non-commercial purposes.
+
+5. Limitation of Liability
+
+   IN NO EVENT SHALL LICENSOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED
+   TO, PROCUREMENT OF SUBSTITUTE GOODS ORH SERVICES, LOSS OF USE, DATA,
+
+   PROFITS OR BUSINESS INTERRUPTION HOWEVER CAUSED AND ON ANY THEORY OF
+   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR IN
+  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING OUT OF THE
+   LICENSED WORK, EVEN IF ADVISED OF THE POSSIBILITY OF SUCHL DAMAGE.
+
+6. Termination
+
+   This License and the rights granted hereunder will terminate automatically
+   upon any breach by you of the terms of this License. Upon termination, you
+   must cease all use, modification, and distribution of the Licensed Work.
+
+7. Change License
+
+   As stated in the Notice, on the Change Date (2029-05-07), the Licensed Work
+   will be made available under the Change License (GPL-3.0). Until that date,
+   the terms of this License apply.
+
+8. Versions of the License
+
+   Licensor may publish revised versions of this License. You may use the
+   Licensed Work under the terms of any version published by Licensor.
+
+9. Miscellaneous
+
+   This License represents the complete agreement concerning the subject matter
+   hereof. If any provision of this License is held to be unenforceable, such
+   provision shall be reformed only to the extent necessary to make it
+   enforceable.
