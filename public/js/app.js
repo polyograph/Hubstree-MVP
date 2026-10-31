@@ -65,7 +65,8 @@ function renderizar(r) {
       <tr><td>Média de palavras por sentença</td><td class="n">${num(r.binah.mediaPalavrasPorSentenca, 1)}</td></tr>
       <tr><td>Conectores lógicos · termos estruturais · contraste</td><td class="n">${r.binah.conectores} · ${r.binah.estruturais} · ${r.binah.contraste}</td></tr>
       </tbody></table>`,
-    tiferet: `<table><tbody>${RELACOES.map((rel) => `<tr><td>${rel.rho} ${esc(rel.nome)}</td><td class="n">${pct(m[rel.key])}</td></tr>`).join('')}</tbody></table>
+    tiferet: `<p class="nota">${esc(r.tiferet.notaOperacional)}</p>
+      <table><thead><tr><th>Componente</th><th>Valor</th><th>Como é calculado</th></tr></thead><tbody>${RELACOES.map((rel) => `<tr><td>${rel.rho} ${esc(rel.nome)}</td><td class="n">${pct(m[rel.key])}</td><td class="op">${esc(r.tiferet.operacionalizacao[rel.key])}</td></tr>`).join('')}</tbody></table>
       <ul>${r.tiferet.leitura.map((l) => `<li>${esc(l)}</li>`).join('')}</ul><p class="nota">${esc(r.tiferet.limitacao)}</p>`,
     gevurah: `<ul>${r.gevurah.limites.map((l) => `<li class="${l.ok ? 'ok' : 'no'}">${l.ok ? '✓' : '✗'} <span style="color:var(--ink)">${esc(l.texto)}</span></li>`).join('')}</ul>`,
     chesed: `<ul>${r.chesed.eixos.map((e) => `<li><b>${esc(e.relacao)}</b> · ${pct(e.valor)}. ${esc(e.sensibilidade)}</li>`).join('')}</ul><p class="nota">${esc(r.chesed.nota)}</p>`,

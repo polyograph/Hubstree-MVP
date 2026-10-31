@@ -40,6 +40,16 @@ const SENSIBILIDADE = {
   compensation: 'responde a termos de contraste (mas, porém, embora, enquanto, complementar) e a termos estruturais',
 };
 
+export const OPERACIONALIZACAO = {
+  similitude: 'min(1; 0,20 + 0,55·comprimento + 0,25·diversidade). Não compara dois objetos: depende só do comprimento e da diversidade lexical',
+  homology: 'min(1; 0,25 + termos estruturais / 8)',
+  equivalence: 'min(1; 0,25 + conectores lógicos / 6 + 0,15·diversidade)',
+  symmetry: 'min(1; 0,20 + min(sentenças; 8) / 12 + conectores lógicos / 12)',
+  equilibrium: 'limitado a [0,1]: 0,85 − 0,7·|0,5 − diversidade| − 0,25·|0,5 − comprimento|',
+  compensation: 'min(1; 0,20 + termos de contraste / 5 + termos estruturais / 12)',
+};
+export const NOTA_OPERACIONAL = 'Os nomes seguem a Álgebra Hexarrelacional. Neste engine, cada componente é operacionalizado por contagens lexicais (comprimento = min(1; palavras/60); diversidade = palavras únicas/palavras). Os valores não medem diretamente as relações semânticas que dão nome aos eixos.';
+
 const pct = (v) => `${(v * 100).toFixed(1).replace('.', ',')}%`;
 const num = (v, d = 4) => v.toFixed(d).replace('.', ',');
 const rotulo = (r) => `${r.rho} (${r.nome})`;
@@ -122,6 +132,8 @@ function tiferet(texto) {
     perfil,
     saturados: saturados.length,
     leitura,
+    operacionalizacao: OPERACIONALIZACAO,
+    notaOperacional: NOTA_OPERACIONAL,
     limitacao: 'Esta leitura interpreta o perfil quantitativo produzido pelo engine. Ela não demonstra, por si só, a ocorrência das relações formais no artefato.',
   };
 }
@@ -204,9 +216,11 @@ function hod(r, quando) {
     `- Diversidade lexical: ${pct(r.binah.diversidade)} · média de palavras por sentença: ${num(r.binah.mediaPalavrasPorSentenca, 1)}`,
     '',
     '## Vetor hexarrelacional (Tiferet)',
-    '| Relação | Valor |',
-    '|---|---|',
-    ...RELACOES.map((rel) => `| ${rotulo(rel)} | ${pct(m[rel.key])} |`),
+    '| Relação | Valor | Operacionalização |',
+    '|---|---|---|',
+    ...RELACOES.map((rel) => `| ${rotulo(rel)} | ${pct(m[rel.key])} | ${OPERACIONALIZACAO[rel.key].replace(/\|/g, '\\|')} |`),
+    '',
+    `> ${NOTA_OPERACIONAL}`,
     '',
     `- f(A) = ${num(m.goldenNorm)} · Π(A) = ${num(m.piSqrtScore)}`,
     ...r.tiferet.leitura.map((l) => `- ${l}`),

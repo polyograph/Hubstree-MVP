@@ -14,6 +14,38 @@ sys.path.insert(0, str(Path(__file__).resolve().parent / "_lib"))
 from yesod import LIMITE_CARACTERES, avaliar  # noqa: E402
 
 MAX_CORPO = LIMITE_CARACTERES * 4 + 4096  # UTF-8 pode usar até 4 bytes por caractere
+CHAVES_PERMITIDAS = {"texto", "vetor"}
+
+
+class CorpoInvalido(ValueError):
+    pass
+
+
+def _sem_duplicatas(pares):
+    chaves = [k for k, _ in pares]
+    if len(chaves) != len(set(chaves)):
+        raise CorpoInvalido("chave duplicada")
+    return dict(pares)
+
+
+def _recusar_constante(nome):
+    raise CorpoInvalido(f"constante não permitida: {nome}")
+
+
+def ler_corpo(bruto):
+    """Contrato do corpo: objeto JSON só com "texto" (string) e "vetor" (objeto, opcional).
+    Recusa chaves duplicadas, chaves extras e NaN/Infinity. O conteúdo de "vetor"
+    é validado depois, no yesod, e um vetor fora do contrato bloqueia pela política."""
+    corpo = json.loads(bruto.decode("utf-8"), object_pairs_hook=_sem_duplicatas,
+                       parse_constant=_recusar_constante)
+    if not isinstance(corpo, dict) or not set(corpo) <= CHAVES_PERMITIDAS or "texto" not in corpo:
+        raise CorpoInvalido("esperado {texto: string, vetor?: objeto}")
+    if not isinstance(corpo["texto"], str):
+        raise CorpoInvalido("texto deve ser string")
+    vetor = corpo.get("vetor")
+    if vetor is not None and not isinstance(vetor, dict):
+        raise CorpoInvalido("vetor deve ser objeto")
+    return corpo["texto"], vetor
 
 
 class handler(BaseHTTPRequestHandler):
@@ -38,12 +70,12 @@ class handler(BaseHTTPRequestHandler):
             self._responder(413 if tamanho > MAX_CORPO else 400, {"erro": "corpo ausente ou grande demais"})
             return
         try:
-            corpo = json.loads(self.rfile.read(tamanho).decode("utf-8"))
-            texto = corpo.get("texto", "")
-            vetor = corpo.get("vetor")
-            if not isinstance(texto, str) or (vetor is not None and not isinstance(vetor, dict)):
-                raise ValueError
-        except (ValueError, UnicodeDecodeError, AttributeError):
-            self._responder(400, {"erro": "JSON inválido: esperado {texto: string, vetor?: objeto}"})
+            texto, vetor = ler_corpo(self.rfile.read(tamanho))
+        except (ValueError, UnicodeDecodeError, RecursionError) as e:  # CorpoInvalido e JSONDecodeError herdam de ValueError
+            self._responder(400, {"erro": f"corpo inválido: {type(e).__name__}"})
             return
-        self._responder(200, avaliar(texto, vetor))
+        try:
+            resultado = avaliar(texto, vetor)
+        except Exception as e:  # falha fechada também no transporte: nunca um 500 sem veredito
+            resultado = {"veredito": "BLOQUEADO", "motivo": f"erro interno: {type(e).__name__}", "politica_ok": False}
+        self._responder(200, resultado)

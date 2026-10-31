@@ -14,6 +14,8 @@ if (entrada_vazia) {
     motivo = "entrada maior que o limite do pipeline";
 } elif (vetor_invalido) {
     motivo = "vetor hexarrelacional fora do intervalo [0,1]";
+} elif (vetor_cliente_invalido) {
+    motivo = "vetor enviado fora do contrato: seis numeros finitos em [0,1], sem texto nem booleano";
 } elif (divergencia_engine) {
     motivo = "o vetor enviado pelo navegador diverge do recalculado no servidor";
 } elif (palavras < 20) {

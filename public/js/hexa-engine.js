@@ -24,8 +24,12 @@ const CONECTORES = /\b(portanto|logo|assim|se|entao|quando|porque|pois|implica|c
 const ESTRUTURAIS = /\b(algoritmo|matriz|sistema|operador|estrutura|funcao|relacao|rede|processo|regra|modelo)\b/g;
 const CONTRASTE = /\b(mas|porem|porém|embora|enquanto|complementar|compensacao|emergencia|emergente)\b/g;
 
+// Espaço em branco: o conjunto do \s / trim() do ECMAScript, escrito por extenso
+// para que o contrato com o Python (api/_lib/hexa_engine.py) fique explícito.
+export const ESPACO = /[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/;
+
 export const normalizar = (texto) =>
-  texto.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 export const goldenNorm = (vetor) =>
   Math.sqrt(vetor.reduce((acc, v, i) => acc + Math.pow(PHI, i) * v * v, 0));
@@ -34,7 +38,7 @@ export const piSqrt = (norma) => (norma <= 0 ? 0 : Math.pow(norma, 1 / Math.PI))
 
 export const contar = (texto) => {
   const n = normalizar(texto);
-  const palavras = n.split(/\s+/).filter(Boolean);
+  const palavras = n.split(ESPACO).filter(Boolean);
   return {
     palavras: palavras.length,
     unicas: new Set(palavras).size,

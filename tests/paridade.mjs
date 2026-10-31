@@ -1,6 +1,7 @@
-// Imprime as métricas do engine JS para cada texto de tests/textos.json.
+// Imprime métricas e contagens do engine JS para um arquivo de textos (padrão: textos.json).
 import { readFileSync } from 'node:fs';
-import { analisar } from '../public/js/hexa-engine.js';
+import { analisar, contar, normalizar } from '../public/js/hexa-engine.js';
 
-const textos = JSON.parse(readFileSync(new URL('./textos.json', import.meta.url), 'utf8'));
-process.stdout.write(JSON.stringify(textos.map((t) => analisar(t))));
+const arquivo = process.argv[2] ?? 'textos.json';
+const textos = JSON.parse(readFileSync(new URL(`./${arquivo}`, import.meta.url), 'utf8'));
+process.stdout.write(JSON.stringify(textos.map((t) => ({ m: analisar(t), c: contar(t), n: normalizar(t) }))));
