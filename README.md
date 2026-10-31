@@ -116,13 +116,23 @@ Para rodar o mesmo servidor localmente: `python3 servidor.py` (http://127.0.0.1:
 
 ### Domínio: hubstree.hubstry.dev
 
-O endereço público é https://hubstree.hubstry.dev. O DNS do hubstry.dev fica na Cloudflare. Um Worker da Cloudflare (`infra/cloudflare-worker-hubstree-proxy.js`) recebe as requisições e as repassa ao serviço do Cloud Run. O registro DNS é `AAAA hubstree → 100::`, com o proxy da Cloudflare ativo. Esse arranjo dispensa o mapeamento de domínio do Cloud Run e mantém o HTTPS e a proteção da Cloudflare. Se a URL do serviço no Cloud Run mudar, atualize a constante `ORIGEM` no Worker.
+O endereço público é https://hubstree.hubstry.dev. O DNS do hubstry.dev fica na Cloudflare. Um Worker da Cloudflare (`infra/cloudflare-worker-hubstree-proxy.js`) recebe as requisições e as repassa ao serviço do Cloud Run. O registro DNS é `AAAA hubstree → 100::`, com o proxy da Cloudflare ativo. Esse arranjo dispensa o mapeamento de domínio do Cloud Run e mantém o HTTPS e a proteção da Cloudflare. Se a URL de alguma origem mudar, atualize a lista `ORIGENS` no Worker.
+
+### Redundância multicloud: Render
+
+O mesmo `servidor.py` roda também no Render (plano free), em https://hubstree-mvp.onrender.com, como origem de redundância. O Worker tenta primeiro o Cloud Run, com limite de 10 segundos; se houver falha de rede, estouro do tempo ou resposta 5xx (erro do servidor), repete a mesma requisição, com o mesmo corpo, no Render. O cabeçalho de resposta `X-Hubstree-Origem` informa qual origem atendeu (`cloud-run` ou `render`). Se as duas falharem, o Worker devolve 503 com `Retry-After`.
+
+Configuração do serviço no Render (runtime nativo, sem Docker):
+
+- Build Command: `python3 -m pip install --target .pydeps -r requirements.txt`
+- Start Command: `PYTHONPATH=.pydeps HOST=0.0.0.0 python3 servidor.py`
+- Health Check Path: `/saude`
+
+O plano free do Render desliga a instância após 15 minutos sem tráfego e leva cerca de um minuto para religá-la. Por isso o Worker espera até 70 segundos pelo Render. Os termos do Render não vedam uso comercial no plano free, mas o classificam como inadequado para produção; aqui ele é só contingência, não a origem principal.
 
 ### Vercel (legado)
 
-`vercel.json` continua no repositório enquanto a migração é validada: `public/` como estático e `api/verificar.py` como função Python. O Root Directory do projeto na Vercel precisa ficar vazio; essa opção fica nas configurações do projeto, não no `vercel.json`.
-
-O backend antigo no Render (`hubstree-mvp-2.onrender.com`) deve continuar ligado como rollback até a produção nova ser validada, inclusive o `POST /api/verificar`.
+`vercel.json` continua no repositório como referência: `public/` como estático e `api/verificar.py` como função Python. O projeto na Vercel está pausado, porque o plano Hobby não admite uso comercial.
 
 ## Licenças
 
