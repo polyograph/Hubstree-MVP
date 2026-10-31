@@ -63,15 +63,35 @@ async function sha256(texto) {
 }
 
 /* ── Keter · Substância ─────────────────────────────── */
+// Fronteira de entrada (Fase 0): o limite é medido em pontos de código Unicode do texto
+// NFC, a mesma unidade de len() no Python. String.length contaria unidades UTF-16.
+const CONTROLE_C0 = /[\u0000-\u0008\u000B\u000C\u000E-\u001F]/; // C0 menos tab, LF e CR
+const bemFormado = (t) => (typeof t.isWellFormed === 'function'
+  ? t.isWellFormed()
+  : !/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(t));
+
+export function codigoTextoInvalido(texto) {
+  if (!bemFormado(texto)) return 'TEXTO_UNICODE_INVALIDO';
+  if (CONTROLE_C0.test(texto)) return 'TEXTO_CONTROLE_INVALIDO';
+  return null;
+}
+
 async function keter(entrada) {
-  const texto = (entrada ?? '').normalize('NFC');
-  const recortado = texto.slice(0, LIMITE_CARACTERES);
+  const bruto = entrada ?? '';
+  const invalido = codigoTextoInvalido(bruto);
+  // Texto malformado não é normalizado nem enviado: o pipeline segue só para registrar o bloqueio.
+  const normalizado = invalido ? '' : bruto.normalize('NFC');
+  const pontos = Array.from(normalizado);
+  const analise = pontos.slice(0, LIMITE_CARACTERES).join('');
   return {
-    texto: recortado,
-    caracteres: texto.length,
-    excedeLimite: texto.length > LIMITE_CARACTERES,
-    vazio: !texto.trim(),
-    hash: await sha256(recortado),
+    texto: analise, // texto_analise: até 20.000 pontos de código, usado pelas etapas de análise
+    textoNormalizado: normalizado, // entrada NFC integral, enviada ao servidor
+    caracteres: invalido ? Array.from(bruto).length : pontos.length,
+    excedeLimite: pontos.length > LIMITE_CARACTERES,
+    vazio: !normalizado.trim(),
+    invalido,
+    inputSha256: invalido ? null : await sha256(normalizado),
+    hash: invalido ? null : await sha256(analise), // analise_sha256
   };
 }
 
@@ -141,6 +161,7 @@ function tiferet(texto) {
 /* ── Gevurah · Quantidade ──────────────────────────── */
 function gevurah(k, b, t) {
   const limites = [
+    { ok: !k.invalido, texto: 'Texto sem caracteres de controle nem Unicode malformado' },
     { ok: !k.vazio, texto: 'Entrada não vazia' },
     { ok: !k.excedeLimite, texto: `Entrada dentro do limite de ${LIMITE_CARACTERES.toLocaleString('pt-BR')} caracteres` },
     { ok: b.palavras >= 20, texto: `Amostra com pelo menos 20 palavras (atual: ${b.palavras})` },
@@ -173,30 +194,55 @@ function netzach(k) {
       engine: 'hexa-engine (porte do HexaSign Lab)',
       politica: 'api/_lib/politica_hubstree.guru',
       limiares: { amplitudeHomogeneo: AMP_HOMOGENEO, amplitudeDisperso: AMP_DISPERSO, palavrasMinimas: 20, sentencasMinimas: 2 },
-      entradaSha256: k.hash,
+      entradaSha256: k.inputSha256,
+      analiseSha256: k.hash,
     },
     curl: 'curl -s -X POST https://SEU-DOMINIO/api/verificar -H "Content-Type: application/json" -d \'{"texto":"..."}\'',
   };
 }
 
 /* ── Yesod · Posição relativa ──────────────────────── */
-async function yesod(texto, metricas, endpoint) {
+// Resultado local: a GuruDev não avaliou a entrada. O bloqueio é técnico, não decisório.
+const local = (codigo, motivo, extra = {}) => ({
+  veredito: 'BLOQUEADO', motivo, codigo, politica_ok: false,
+  politica_avaliada: false, origem_resultado: 'cliente', disponivel: false, ...extra,
+});
+
+async function yesod(k, metricas, endpoint) {
+  if (k.invalido) {
+    return local(k.invalido, k.invalido === 'TEXTO_UNICODE_INVALIDO'
+      ? 'o texto contém caractere Unicode malformado (surrogate isolado)'
+      : 'o texto contém caractere de controle não permitido');
+  }
   const vetor = Object.fromEntries(RELACOES.map((r) => [r.key, metricas[r.key]]));
+  const corpo = { texto: k.textoNormalizado, vetor };
+  if (k.inputSha256) corpo.input_sha256 = k.inputSha256;
+  let resp;
   try {
-    const resp = await fetch(endpoint, {
+    resp = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ texto, vetor }),
+      body: JSON.stringify(corpo),
     });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    return { ...(await resp.json()), disponivel: true };
   } catch (erro) {
-    return {
-      veredito: 'BLOQUEADO',
-      motivo: `verificação indisponível (${erro.message}); falha fechada`,
-      politica_ok: false,
-      disponivel: false,
-    };
+    return local('VERIFICACAO_INDISPONIVEL', `verificação indisponível (${erro.message}); falha fechada`);
+  }
+  if (resp.status === 413) {
+    return local('CORPO_REQUISICAO_ACIMA_LIMITE', 'o corpo da requisição passou do limite de transporte; o servidor não mediu o texto');
+  }
+  if (resp.status === 400) {
+    let codigoServidor = null;
+    try { codigoServidor = (await resp.json()).codigo ?? null; } catch { /* corpo sem JSON */ }
+    return local('REQUISICAO_INVALIDA', `requisição recusada pelo servidor${codigoServidor ? ` (${codigoServidor})` : ''}`,
+      { codigo_servidor: codigoServidor });
+  }
+  if (!resp.ok) {
+    return local('VERIFICACAO_INDISPONIVEL', `verificação indisponível (HTTP ${resp.status}); falha fechada`);
+  }
+  try {
+    return { ...(await resp.json()), disponivel: true };
+  } catch {
+    return local('VERIFICACAO_INDISPONIVEL', 'resposta do servidor ilegível; falha fechada');
   }
 }
 
@@ -208,7 +254,8 @@ function hod(r, quando) {
     '',
     `- Gerado em: ${quando}`,
     `- Pipeline: v${VERSAO}`,
-    `- SHA-256 da entrada: ${r.keter.hash ?? 'indisponível neste navegador'}`,
+    `- SHA-256 da entrada (NFC integral): ${r.keter.inputSha256 ?? 'indisponível'}`,
+    `- SHA-256 do trecho analisado: ${r.keter.hash ?? 'indisponível'}`,
     `- Veredito (Yesod): **${r.yesod.veredito}** — ${r.yesod.motivo}`,
     '',
     '## Estrutura (Binah)',
@@ -246,7 +293,7 @@ function malkuth(r) {
     resumo: `${r.binah.palavras} palavras · Π(A) = ${num(r.tiferet.metricas.piSqrtScore)} · perfil ${r.tiferet.perfil}`,
     json: {
       versao: VERSAO,
-      entrada: { sha256: r.keter.hash, caracteres: r.keter.caracteres },
+      entrada: { sha256: r.keter.inputSha256, analise_sha256: r.keter.hash, caracteres: r.keter.caracteres },
       estrutura: r.binah,
       termos: r.chokhmah,
       vetor: r.tiferet.metricas,
@@ -269,7 +316,7 @@ export async function executar(entrada, { endpoint = '/api/verificar', quando = 
   await passo('gevurah', () => gevurah(r.keter, r.binah, r.tiferet));
   await passo('chesed', () => chesed(r.tiferet));
   await passo('netzach', () => netzach(r.keter));
-  await passo('yesod', () => yesod(entrada ?? '', r.tiferet.metricas, endpoint));
+  await passo('yesod', () => yesod(r.keter, r.tiferet.metricas, endpoint));
   await passo('hod', () => hod(r, quando));
   await passo('malkuth', () => malkuth(r));
   return r;
