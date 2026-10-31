@@ -114,6 +114,10 @@ O último comando imprime a URL do serviço. Rotas úteis: `/` (interface), `/ap
 
 Para rodar o mesmo servidor localmente: `python3 servidor.py` (http://127.0.0.1:8000).
 
+### Domínio: hubstree.hubstry.dev
+
+O endereço público é https://hubstree.hubstry.dev. O DNS do hubstry.dev fica na Cloudflare. Um Worker da Cloudflare (`infra/cloudflare-worker-hubstree-proxy.js`) recebe as requisições e as repassa ao serviço do Cloud Run. O registro DNS é `AAAA hubstree → 100::`, com o proxy da Cloudflare ativo. Esse arranjo dispensa o mapeamento de domínio do Cloud Run e mantém o HTTPS e a proteção da Cloudflare. Se a URL do serviço no Cloud Run mudar, atualize a constante `ORIGEM` no Worker.
+
 ### Vercel (legado)
 
 `vercel.json` continua no repositório enquanto a migração é validada: `public/` como estático e `api/verificar.py` como função Python. O Root Directory do projeto na Vercel precisa ficar vazio; essa opção fica nas configurações do projeto, não no `vercel.json`.
