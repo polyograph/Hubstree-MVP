@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "echo \"frontend estatico em public/, sem etapa de build\"",
     "dev": "python3 scripts/dev.py",
     "test": "node --test tests/pipeline.test.mjs && python3 -m pytest -q tests"
   },
