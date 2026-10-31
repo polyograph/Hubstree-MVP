@@ -66,8 +66,15 @@ class Hubstree(SimpleHTTPRequestHandler):
         sys.stderr.write(f"{self.command} {self.path.split('?')[0]} {args[1] if len(args) > 1 else ''}\n")
 
 
+class ServidorConcorrente(ThreadingHTTPServer):
+    # A fila padrão do socketserver aceita só 5 conexões pendentes; rajadas maiores
+    # eram recusadas. 128 cobre a concorrência configurada no Cloud Run com folga.
+    request_queue_size = 128
+    daemon_threads = True
+
+
 def criar_servidor(host, porta):
-    return ThreadingHTTPServer((host, porta), partial(Hubstree, directory=str(PUBLICO)))
+    return ServidorConcorrente((host, porta), partial(Hubstree, directory=str(PUBLICO)))
 
 
 if __name__ == "__main__":

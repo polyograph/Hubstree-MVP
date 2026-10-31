@@ -21,9 +21,14 @@ from verificar import handler  # noqa: E402
 TEXTO = json.loads((RAIZ / "tests" / "textos.json").read_text("utf-8"))[2]
 
 
+class Servidor(ThreadingHTTPServer):
+    request_queue_size = 128  # a fila padrão (5) recusava rajadas do teste de concorrência
+    daemon_threads = True
+
+
 @pytest.fixture(scope="module")
 def url():
-    servidor = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    servidor = Servidor(("127.0.0.1", 0), handler)
     threading.Thread(target=servidor.serve_forever, daemon=True).start()
     yield f"http://127.0.0.1:{servidor.server_address[1]}/api/verificar"
     servidor.shutdown()
