@@ -68,7 +68,7 @@ function renderizar(r) {
     tiferet: `<p class="nota">${esc(r.tiferet.notaOperacional)}</p>
       <table><thead><tr><th>Componente</th><th>Valor</th><th>Como é calculado</th></tr></thead><tbody>${RELACOES.map((rel) => `<tr><td>${rel.rho} ${esc(rel.nome)}</td><td class="n">${pct(m[rel.key])}</td><td class="op">${esc(r.tiferet.operacionalizacao[rel.key])}</td></tr>`).join('')}</tbody></table>
       <ul>${r.tiferet.leitura.map((l) => `<li>${esc(l)}</li>`).join('')}</ul><p class="nota">${esc(r.tiferet.limitacao)}</p>`,
-    gevurah: `<ul>${r.gevurah.limites.map((l) => `<li class="${l.ok ? 'ok' : 'no'}">${l.ok ? '✓' : '✗'} <span style="color:var(--ink)">${esc(l.texto)}</span></li>`).join('')}</ul>`,
+    gevurah: `<ul>${r.gevurah.limites.map((l) => `<li class="${l.ok ? 'ok' : 'no'}">${l.ok ? '✓' : '✗'} <span class="txt">${esc(l.texto)}</span></li>`).join('')}</ul>`,
     chesed: `<ul>${r.chesed.eixos.map((e) => `<li><b>${esc(e.relacao)}</b> · ${pct(e.valor)}. ${esc(e.sensibilidade)}</li>`).join('')}</ul><p class="nota">${esc(r.chesed.nota)}</p>`,
     netzach: `<pre>${esc(JSON.stringify(r.netzach.especificacao, null, 2))}</pre><pre>${esc(r.netzach.curl)}</pre>`,
     hod: `<p>Relatório em Markdown pronto para download.</p><pre>${esc(r.hod.markdown.split('\n').slice(0, 8).join('\n'))}\n…</pre>`,

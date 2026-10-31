@@ -76,3 +76,4 @@ section{margin-bottom:32px}
 
 .grade>*{min-width:0}
 @media (max-width:860px){.grade{grid-template-columns:minmax(0,1fr)}.radar-card{position:static}.arvore{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.etapa li .txt{color:var(--ink)}
