@@ -106,13 +106,17 @@ No Cloud Shell:
 gcloud config get-value project   # confira o projeto ativo
 gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
 git clone https://github.com/polyograph/Hubstree-MVP.git && cd Hubstree-MVP
-gcloud run deploy hubstree --source . --region southamerica-east1 --allow-unauthenticated \
+gcloud run deploy hubstree --source . --region us-central1 --allow-unauthenticated \
   --memory 256Mi --cpu 1 --min-instances 0 --max-instances 2 --concurrency 20 --timeout 30
 ```
 
 O último comando imprime a URL do serviço. Rotas úteis: `/` (interface), `/api/verificar` (Yesod) e `/saude` (verificação de funcionamento).
 
 Para rodar o mesmo servidor localmente: `python3 servidor.py` (http://127.0.0.1:8000).
+
+### Domínio: hubstree.hubstry.dev
+
+O endereço público é https://hubstree.hubstry.dev. O DNS do hubstry.dev fica na Cloudflare. Um Worker da Cloudflare (`infra/cloudflare-worker-hubstree-proxy.js`) recebe as requisições e as repassa ao serviço do Cloud Run. O registro DNS é `AAAA hubstree → 100::`, com o proxy da Cloudflare ativo. Esse arranjo dispensa o mapeamento de domínio do Cloud Run e mantém o HTTPS e a proteção da Cloudflare. Se a URL do serviço no Cloud Run mudar, atualize a constante `ORIGEM` no Worker.
 
 ### Vercel (legado)
 
