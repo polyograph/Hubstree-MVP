@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hubstree · Pipeline Ontológico Cognitivo</title>
+<meta name="description" content="Hubstree: pipeline determinístico em dez etapas (sefirot × categorias de Aristóteles), com o engine hexarrelacional π√f(A) do HexaSign Lab e verificação por política GuruDev.">
+<meta name="theme-color" content="#0B1B3A">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230B1B3A'/%3E%3Ccircle cx='16' cy='6' r='3' fill='%2300E5FF'/%3E%3Ccircle cx='9' cy='14' r='3' fill='%23F5F9FF'/%3E%3Ccircle cx='23' cy='14' r='3' fill='%23F5F9FF'/%3E%3Ccircle cx='16' cy='26' r='3' fill='%2300E5FF'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topo">
+  <div class="wrap">
+    <p class="marca">HUBSTREE <span>· by Hubstry · Polyograph</span></p>
+    <h1>Pipeline Ontológico Cognitivo</h1>
+    <p class="lede">Dez etapas, uma para cada sefirá, cruzadas com as dez categorias de Aristóteles. As etapas analíticas usam o engine hexarrelacional π√f(A) do HexaSign Lab. A verificação final roda uma política escrita em GuruDev, no interpretador real da linguagem.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="entrada" aria-labelledby="t-entrada">
+    <h2 id="t-entrada" class="kicker">Entrada · Keter</h2>
+    <label for="texto" class="sr">Texto a processar</label>
+    <textarea id="texto" rows="7" maxlength="20000" placeholder="Cole um texto em português (pelo menos 20 palavras e 2 sentenças para uma leitura completa)."></textarea>
+    <div class="acoes">
+      <button id="processar" type="button" class="btn">Processar</button>
+      <button id="exemplo" type="button" class="btn linha">Carregar exemplo</button>
+      <span id="contador" class="contador" aria-live="polite">0 caracteres</span>
+    </div>
+  </section>
+
+  <section class="arvore-wrap" aria-labelledby="t-arvore">
+    <h2 id="t-arvore" class="kicker">Árvore do pipeline</h2>
+    <ol class="arvore" id="arvore"></ol>
+  </section>
+
+  <section id="resultado" class="resultado" hidden aria-live="polite">
+    <div class="veredito" id="veredito"></div>
+    <div class="grade">
+      <figure class="radar-card">
+        <figcaption class="kicker">Vetor hexarrelacional · Tiferet</figcaption>
+        <div id="radar"></div>
+        <p class="formula" id="formula"></p>
+      </figure>
+      <div class="etapas" id="etapas"></div>
+    </div>
+    <div class="downloads">
+      <button id="baixar-json" type="button" class="btn">Baixar JSON</button>
+      <button id="baixar-md" type="button" class="btn linha">Baixar relatório (.md)</button>
+    </div>
+  </section>
+
+  <aside class="aviso">
+    <strong>Limite do método.</strong> As heurísticas do engine são determinísticas e experimentais. Os resultados são saídas analíticas, não medições científicas validadas. Nenhum modelo de linguagem participa do pipeline.
+  </aside>
+</main>
+
+<footer class="rodape">
+  <div class="wrap">
+    <span>Hubstree v2 · <a href="https://github.com/polyograph/Hubstree-MVP">código</a> · engine: <a href="https://github.com/guilherme-machado-ceo/hubstry-hexasign-lab">HexaSign Lab</a> · política: <a href="https://github.com/Hubstry-DeepTech/gurudev-core">GuruDev</a></span>
+    <span><a href="https://polyograph.hubstry.dev/">Polyograph</a> · <a href="https://institucional.hubstry.dev/">Hubstry Deep Tech</a></span>
+  </div>
+</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

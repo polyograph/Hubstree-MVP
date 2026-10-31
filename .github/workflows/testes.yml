@@ -1,0 +1,33 @@
+name: testes
+on:
+  push:
+    branches: [main]
+  pull_request:
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pytest
+      - run: npm test
+  imagem:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Constrói a imagem do Cloud Run
+        run: docker build -t hubstree:ci .
+      - name: Teste de fumaça do contêiner
+        run: |
+          docker run -d --rm --name hubstree -p 8080:8080 --read-only hubstree:ci
+          for i in $(seq 1 20); do curl -sf http://127.0.0.1:8080/saude && break; sleep 1; done
+          curl -sf http://127.0.0.1:8080/ | grep -q Hubstree
+          TEXTO=$(python3 -c "import json;print(json.dumps({'texto': json.load(open('tests/textos.json'))[2]}))")
+          curl -sf -X POST http://127.0.0.1:8080/api/verificar -H 'Content-Type: application/json' -d "$TEXTO" | grep -q PROCESSADO
+          docker logs hubstree
+          docker stop hubstree

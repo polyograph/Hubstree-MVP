@@ -1,0 +1,12 @@
+.git
+.github
+.vercel
+node_modules
+tests
+scripts
+docs
+**/__pycache__
+.pytest_cache
+*.md
+vercel.json
+package.json

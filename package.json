@@ -1,15 +1,14 @@
 {
   "name": "hubstree-mvp",
-  "version": "1.0.0",
-  "description": "Framework Ontological Cognitive Pipeline by Hubstry",
-  "main": "src/backend/server.js",
+  "version": "2.0.0",
+  "description": "Hubstree: pipeline ontológico cognitivo com engine π√f(A) (HexaSign Lab) e verificação por política GuruDev",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "start": "node src/backend/server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "body-parser": "^1.20.2"
+    "build": "echo \"frontend estatico em public/, sem etapa de build\"",
+    "dev": "python3 scripts/dev.py",
+    "test": "node --test tests/pipeline.test.mjs && python3 -m pytest -q tests"
   },
   "author": "Hubstry",
-  "license": "MIT"
+  "license": "Apache-2.0"
 }
