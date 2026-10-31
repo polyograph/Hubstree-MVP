@@ -66,7 +66,7 @@ npm test                        # testes JS (node --test) e Python (pytest)
 
 ## Deploy
 
-Vercel, sem etapa de build: `public/` é servido como estático e `api/verificar.py` roda como função Python. A configuração está em `vercel.json`. O backend antigo no Render (`hubstree-mvp-2.onrender.com`) deixa de ser usado e pode ser desligado.
+Vercel, sem etapa de build: `public/` é servido como estático e `api/verificar.py` roda como função Python. A configuração está em `vercel.json`. Nas configurações do projeto na Vercel, o Root Directory fica vazio (raiz do repositório). O backend antigo no Render (`hubstree-mvp-2.onrender.com`) deixa de ser usado e pode ser desligado.
 
 ## Licenças
 
