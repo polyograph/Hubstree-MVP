@@ -79,7 +79,9 @@ api/_lib/
   politica_hubstree.guru
   gurudev/            interpretador GuruDev vendorizado (ver VENDOR.md)
 tests/                paridade JS↔Python, vereditos e falha fechada
-scripts/dev.py        servidor local
+servidor.py           servidor único (estático + API) para Cloud Run e uso local
+Dockerfile            imagem do serviço
+scripts/dev.py        servidor local de desenvolvimento
 ```
 
 ## Rodar localmente
@@ -92,9 +94,29 @@ npm test                        # testes JS (node --test) e Python (pytest)
 
 ## Deploy
 
-Vercel, sem etapa de build: `public/` é servido como estático e `api/verificar.py` roda como função Python. A configuração está em `vercel.json`.
+### Cloud Run (recomendado)
 
-O Root Directory do projeto na Vercel precisa ficar vazio (raiz do repositório). Essa opção não pode ser definida no `vercel.json`; fica nas configurações do projeto (Settings › Build and Deployment).
+O plano Hobby da Vercel é só para uso pessoal e não comercial. Como o Hubstree é apresentado como produto da Hubstry, o destino recomendado é o Cloud Run, do Google Cloud, que aceita uso comercial.
+
+Um único serviço atende tudo: `servidor.py` serve o frontend de `public/` e o `POST /api/verificar`, com a mesma função da Vercel. A imagem (`Dockerfile`) usa Python 3.12, roda como usuário sem privilégios e já traz as tabelas do parser da GuruDev geradas. Com tráfego de demonstração e mínimo de zero instâncias, o custo tende a zero.
+
+No Cloud Shell:
+
+```bash
+gcloud config get-value project   # confira o projeto ativo
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com
+git clone https://github.com/polyograph/Hubstree-MVP.git && cd Hubstree-MVP
+gcloud run deploy hubstree --source . --region southamerica-east1 --allow-unauthenticated \
+  --memory 256Mi --cpu 1 --min-instances 0 --max-instances 2 --concurrency 20 --timeout 30
+```
+
+O último comando imprime a URL do serviço. Rotas úteis: `/` (interface), `/api/verificar` (Yesod) e `/saude` (verificação de funcionamento).
+
+Para rodar o mesmo servidor localmente: `python3 servidor.py` (http://127.0.0.1:8000).
+
+### Vercel (legado)
+
+`vercel.json` continua no repositório enquanto a migração é validada: `public/` como estático e `api/verificar.py` como função Python. O Root Directory do projeto na Vercel precisa ficar vazio; essa opção fica nas configurações do projeto, não no `vercel.json`.
 
 O backend antigo no Render (`hubstree-mvp-2.onrender.com`) deve continuar ligado como rollback até a produção nova ser validada, inclusive o `POST /api/verificar`.
 
